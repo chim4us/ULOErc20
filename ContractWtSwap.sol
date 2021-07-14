@@ -101,6 +101,11 @@ contract UlorCon is ownable, Destroyable{
         MembCount += 1;
     }
     
+    function resetContractDtl(uint _JoinCst,uint _RefPercnt) public onlyOwner{
+        JoinCst = (_JoinCst) * (10 ** uint256(18 ));
+        RefPercnt = _RefPercnt;
+    }
+    
     function InsertPerson(Member memory _newMember) private{
         address NewCreator = msg.sender;
         Members[NewCreator] = _newMember;
@@ -108,7 +113,7 @@ contract UlorCon is ownable, Destroyable{
     
     function swapTkn() public payable whenSwapNotPaused {
         require(SwapedAcct[msg.sender] <= 0,"YOU ALREADY SWAPPED YOUR TOKEN");
-        require(msg.value >= 50 finney,"VALUE MUST BE GREATER THAN 0.01");
+        require(msg.value >= 50 finney ,"VALUE MUST BE GREATER THAN 0.01");
         
         uint256 sndtk = (1) * (10 ** uint256(18 ));
         
@@ -123,7 +128,7 @@ contract UlorCon is ownable, Destroyable{
         }
     }
     
-    function checkAddr(address adr) public view returns(uint SwapPos, uint AdrBal,uint memID, address memRef) {
+    function checkAddr(address adr) public view returns(uint SwapPos, uint AdrBal,uint memberID, address memberRef) {
         uint adrCnt = SwapedAcct[adr];
         uint adrBal = Ballances[adr];
         uint memid = Members[adr].id;
@@ -160,9 +165,9 @@ contract UlorCon is ownable, Destroyable{
         require(Ballances[msg.sender] > 0,"transfer amount exceeds ULOR Token balance");
         uint amoutToWith = Ballances[msg.sender];
         Ballances[msg.sender] = 0;
+        assert(Ballances[msg.sender] == 0);
         Token.transfer(msg.sender,amoutToWith);
         
-        assert(Ballances[msg.sender] == 0);
         TotalERCSupply -= amoutToWith;
         assert(Token.balanceOf(address(this)) >= TotalERCSupply);
         
@@ -199,7 +204,7 @@ contract UlorCon is ownable, Destroyable{
         return conBal;
     }
     
-    function withdrawUlor(uint amt) public payable onlyOwner whenNotPaused cost(amt,msg.sender) returns(uint){
+    function withdrawUlor(uint amt) public onlyOwner whenNotPaused cost(amt,msg.sender) returns(uint){
         uint256 sndtk = (amt) * (10 ** uint256(18 )); 
         bool TranRec = Token.transfer(msg.sender,sndtk);
         if(TranRec){
