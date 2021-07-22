@@ -96,7 +96,10 @@ contract Ulor is ERC20{
     }
     
     function BurnTkn(uint amt) public onlyGov{
-        _burn(msg.sender,amt);
+        
+        uint256 brntk = (amt) * (10 ** uint256(18 ));
+        
+        _burn(msg.sender,brntk);
         
         emit BurnTknEvt(msg.sender,amt);
     }
