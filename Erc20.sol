@@ -16,6 +16,8 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 
     string private _name;
     string private _symbol;
+    
+    mapping(address => bool) internal PauseAddr;
 
     
     constructor(string memory name_, string memory symbol_) {
@@ -28,6 +30,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      */
     function name() public view virtual override returns (string memory) {
         return _name;
+    }
+    
+    function setPause(bool Pval,address adr) internal {
+        PauseAddr[adr] = Pval;
     }
 
     /**
@@ -192,6 +198,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
+        require(PauseAddr[sender] == false,"Address paused");
 
         _beforeTokenTransfer(sender, recipient, amount);
 
@@ -299,7 +306,9 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         address from,
         address to,
         uint256 amount
-    ) internal virtual {}
+    ) internal virtual {
+        require(PauseAddr[from] == false,"Address paused");
+    }
 
     /**
      * @dev Hook that is called after any transfer of tokens. This includes
